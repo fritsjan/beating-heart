@@ -40,7 +40,21 @@ bool dirB = true; // true is 0 -> 180
 
 ESP32PWM pwm;
 
+bool run = true;
+
+void processSerial() {
+    String input = Serial.readString();
+    if (input.startsWith("p")) {
+        run = !run;
+        Serial.println((run ? "Loop RUNNING" : "Loop PAUSED"));
+    }
+    while(Serial.available()) Serial.read();
+}
+
 void setup() {
+  Serial.begin(115200);
+  Serial.println(F("\nREADY!\n"));
+
   // Allow allocation of all timers
 	ESP32PWM::allocateTimer(0);
 	ESP32PWM::allocateTimer(1);
@@ -51,20 +65,27 @@ void setup() {
   servoA.attach(servo1Pin, minUs, maxUs);
   servoB.attach(servo2Pin, minUs, maxUs);
   pinMode(LED, OUTPUT);
+
 }
 
 
 void loop() {
 
-  // non blocking servo motion
-  if(servoSpeedA.triggered()){
-    // increase or decrease position
-    if (dirA) { posA += posAstep; } else { posA -= posAstep; }
-    // check position and set direction
-    if (posA >= maxPosA) { posA = maxPosA; dirA = false; }
-    if (posA <= minPosA) { posA = minPosA; dirA = true; }
-    // update position of servo'
-    if (invertA) { servoA.write(180 - posA); } else { servoA.write(posA); }
+  if (Serial.available()) processSerial();
+
+  if(run){
+
+    // non blocking servo motion
+    if(servoSpeedA.triggered()){
+      // increase or decrease position
+      if (dirA) { posA += posAstep; } else { posA -= posAstep; }
+      // check position and set direction
+      if (posA >= maxPosA) { posA = maxPosA; dirA = false; }
+      if (posA <= minPosA) { posA = minPosA; dirA = true; }
+      // update position of servo'
+      if (invertA) { servoA.write(180 - posA); } else { servoA.write(posA); }
+    }
+
   }
 
 }
