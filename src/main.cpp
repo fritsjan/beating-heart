@@ -18,10 +18,10 @@ bool ledState = LOW;
 Servo servoA;
 Servo servoB;
 
-BlockNot servoSpeed(22);
+BlockNot servoSpeed(20);
 BlockNot startTimerA(1200);
 BlockNot startTimerB(100); // time between A and B
-BlockNot changeBeat(20000);
+BlockNot changeBeat(10000);
 
 // Published values for SG90 servos; adjust if needed
 int minUs = 500;
@@ -29,8 +29,8 @@ int maxUs = 2500;
 
 int minPosA = 0;
 int minPosB = 0;
-int maxPosA = 90;
-int maxPosB = 90;
+int maxPosA = 100;
+int maxPosB = 100;
 bool invertA = false;
 bool invertB = true;
 
